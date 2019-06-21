@@ -1,24 +1,31 @@
 // const { get, set } = require("lodash");
 
+const helpers = require("./helpers");
+
 const defaultSettings = {
   deserializeMasquerade: i => i,
-  serializeMasquerade: i => i
-  // variable paths for lodash get.
-  //   sessionLocation: "session.masqueradingAs",
-  //   realUserLocation: "realUser",
-  //   isMasqueradingLocation: "isMasquerading"
+  serializeMasquerade: i => i,
+
+  // only used for the helpers
+  successResponse: { status: "success" },
+  failureResponse: { status: "failure" },
+  getUserById: id => {
+    throw new Error(
+      "Please provide getUserById to passport-masquerade to use the helper."
+    );
+  },
+  canUserMasquerade: (realUser, requestedId) => {
+    throw new Error(
+      "Please provide canUserMasquerade to passport-masquerade to use the helper."
+    );
+  }
 };
 
 module.exports = (overrideSettings = {}) => {
   const settings = Object.assign({}, defaultSettings, settings);
 
-  let currentReq = null;
   return {
     middleware: async (req, res, next) => {
-      // NOTE: this alone breaks most passport integrations as the deserialize user method needs
-      // to consider that the req.user.id is no longer correct.
-      currentReq = req;
-
       if (req.session.masqueradingAs) {
         const realUser = req.user;
 
@@ -37,18 +44,19 @@ module.exports = (overrideSettings = {}) => {
       }
       next();
     },
-    setMasquerading: as => {
-      currentReq.session.masqueradingAs = settings.serializeMasquerade(as);
+    setMasquerading: (req, as) => {
+      req.session.masqueradingAs = settings.serializeMasquerade(as);
     },
-    clearMasquerading: () => {
-      currentReq.session.masqueradingAs = null;
+    clearMasquerading: req => {
+      req.session.masqueradingAs = null;
     },
     getRealUser: user => {
       // TODO: does something weird happen here if the user persists user.masqueradeFrom.across serialization?
-      if (user === undefined) user = currentReq.user;
       if (!user) return;
       if (user.masqueradingFrom) return user.masqueradingFrom;
       return user;
-    }
+    },
+
+    helpers: helpers(settings, this)
   };
 };
