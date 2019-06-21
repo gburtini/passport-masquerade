@@ -11,6 +11,10 @@ This library chooses the first method. Note that this means you likely have to a
 
 Masqueraded users have an additional field called `masqueradingFrom` that contains the original user. This may be used, for example, to show some front end indication that you're masquerading.
 
+# Dependencies
+
+A passport `session` implementation must be available.
+
 # Opinionated Usage
 
 There's a `helpers` object that provides mock versions of all the integration you need. See [helpers.js](helpers.js).

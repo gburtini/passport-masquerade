@@ -1,5 +1,3 @@
-// const { get, set } = require("lodash");
-
 const helpers = require("./helpers");
 
 const defaultSettings = {
@@ -51,7 +49,7 @@ module.exports = (overrideSettings = {}) => {
       req.session.masqueradingAs = null;
     },
     getRealUser: user => {
-      // TODO: does something weird happen here if the user persists user.masqueradeFrom.across serialization?
+      // TODO: does something weird happen here if the user persists user.masqueradeFrom.in their serialization?
       if (!user) return;
       if (user.masqueradingFrom) return user.masqueradingFrom;
       return user;

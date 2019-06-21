@@ -2,7 +2,7 @@ module.exports = (settings, context) = {
   masqueradeEndpoint: async function(req, res, next) {
     const id = req.params.id;
     if (!id) {
-      // unmasquerade
+      // unmasquerade if no ID is provided.
       context.clearMasquerading(req);
       return res.json(settings.successResponse);
     }
