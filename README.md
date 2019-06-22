@@ -80,9 +80,9 @@ As appropriate for your use case, you can mix-and-match the opinionated `helpers
 
 # Gotchas
 
-## Adjusting Serialize User
+## Passport's serializeUser should serialize the real user.
 
-At the end of a request, passport will call `serializeUser` with the masqueraded user. To handle this, we provide the `getRealUser` method to ensure you don't persist a masqueraded state.
+At the end of a request, passport will call `serializeUser` **with the masqueraded user**. To handle this, we provide the `getRealUser` method to ensure you don't persist a masqueraded state.
 
 ```js
 passport.serializeUser((potentiallyMasqueradedUser, done) => {
