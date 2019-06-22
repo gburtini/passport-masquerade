@@ -1,6 +1,6 @@
 # passport-masquerade
 
-This provides a middleware to allow administrators (or other users -- your implementation defines the permissions) to masquerade as other users, for example, to implement a "god view."
+This provides a middleware to allow administrators (or other users - your implementation defines the permissions) to masquerade as other users, for example, to implement a "god view."
 
 From a design perspective, masquerading could be done two fundamental ways:
 
@@ -45,7 +45,7 @@ router.post("/masquerade/clear", helpers.unmasqueradeEndpoint);
 router.post("/masquerade/:id", helpers.masqueradeEndpoint);
 ```
 
-The helpers are opinionated, requiring, for example, fields like ":id", full user objects and JSON response blobs. As such, the raw functionality is exposed as follows.
+The helpers are opinionated, requiring, for example, fields like `:id`, full user objects and JSON response blobs. As such, the raw functionality is exposed as follows.
 
 # Raw Usage
 
@@ -82,7 +82,7 @@ As appropriate for your use case, you can mix-and-match the opinionated `helpers
 
 ## Adjusting Serialize User
 
-Because we've overwritten req.user, at the end of a request, passport calls serializeUser with the masqueraded user. To handle this, we provide the `getRealUser` method to ensure you don't persist a masquerade state.
+At the end of a request, passport will call `serializeUser` with the masqueraded user. To handle this, we provide the `getRealUser` method to ensure you don't persist a masqueraded state.
 
 ```js
 passport.serializeUser((potentiallyMasqueradedUser, done) => {
@@ -92,13 +92,13 @@ passport.serializeUser((potentiallyMasqueradedUser, done) => {
 });
 ```
 
-The helper version of serializeUser handles this for you. If you were to persist your masqueraded user, you will lose your underlying real user session and the behavior should be considered undefined -- open to PRs that improve detection of this behavior to ease developer surprise.
+The helper version of `serializeUser` handles this for you. If you were to persist your masqueraded user, you will lose your underlying real user session and the behavior should be considered undefined. Open to PRs that improve detection of this behavior to ease developer surprise.
 
 ## Deserialized users should be (mutable) objects.
 
 This is normally the case, though if you are storing a simple string or ID as a deserialized user, we throw an error.
 
-Specifically, they need to support tacking on the `masqueradedFrom` key. Open to PRs that generalize this behavior if it is blocking anyone.
+Specifically, they need to support tacking on the `masqueradedFrom` key. Open to PRs that generalize this behavior to support other `user` styles.
 
 If you cannot return a valid user from a requested deserialization, you should throw.
 
