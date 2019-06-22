@@ -20,10 +20,10 @@ const defaultSettings = {
 };
 
 module.exports = (overrideSettings = {}) => {
-  const settings = Object.assign({}, defaultSettings, settings);
+  const settings = Object.assign({}, defaultSettings, overrideSettings);
 
   return {
-    middleware: async (req, res, next) => {
+    middleware: async (req, _, next) => {
       if (req.session.masqueradingAs) {
         const realUser = req.user;
 
@@ -31,15 +31,10 @@ module.exports = (overrideSettings = {}) => {
           req.session.masqueradingAs
         );
 
-        if (typeof req.user !== "object") {
-          throw new Error(
-            "Your req.user object (deserialized user) must be an object for passport-masquerade to work."
-          );
-        }
         req.user.masqueradingFrom = realUser;
-
         req.isMasquerading = true;
       }
+
       next();
     },
     setMasquerading: (req, as) => {
@@ -49,7 +44,6 @@ module.exports = (overrideSettings = {}) => {
       req.session.masqueradingAs = null;
     },
     getRealUser: user => {
-      // TODO: does something weird happen here if the user persists user.masqueradeFrom.in their serialization?
       if (!user) return;
       if (user.masqueradingFrom) return user.masqueradingFrom;
       return user;

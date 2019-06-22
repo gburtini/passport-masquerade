@@ -1,11 +1,6 @@
 module.exports = (settings, context) => ({
-  masqueradeEndpoint: async function(req, res, next) {
+  masqueradeEndpoint: async function(req, res) {
     const id = req.params.id;
-    if (!id) {
-      // unmasquerade if no ID is provided.
-      context.clearMasquerading(req);
-      return res.json(settings.successResponse);
-    }
 
     if (!settings.canMasquerade(context.getRealUser(req.user), id)) {
       return res.json(settings.failureResponse);
@@ -15,9 +10,18 @@ module.exports = (settings, context) => ({
     return res.json(settings.successResponse);
   },
 
+  unmasqueradeEndpoint: async function(req, res) {
+    context.clearMasquerading(req);
+    return res.json(settings.successResponse);
+  },
+
   serializeUser: (potentiallyMasqueradedUser, done) => {
-    const user = context.getRealUser(potentiallyMasqueradedUser);
-    done(null, user.id);
+    try {
+      const user = context.getRealUser(potentiallyMasqueradedUser);
+      done(null, user.id);
+    } catch (e) {
+      done(e);
+    }
   },
 
   deserializeUser: async (id, done) => {

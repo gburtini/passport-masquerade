@@ -17,36 +17,35 @@ A passport `session` implementation must be available.
 
 # Opinionated Usage
 
-There's a `helpers` object that provides mock versions of all the integration you need. See [helpers.js](helpers.js).
+There's a `helpers` object that provides an approach to the integration. See [helpers.js](helpers.js).
 
 ```js
 const passportMasquerade = require("passport-masquerade");
-const {
-  middleware,
-  helpers
-} = passportMasquerade({
-    getUserById: (id) => return {
-        id,
-        name: "Fake User"
-    },
-    canUserMasquerade: (user, requestedId) => {
-        return true;
-    }
+const { middleware, helpers } = passportMasquerade({
+  getUserById: id => ({
+    id,
+    name: "Fake User"
+  }),
+  canUserMasquerade: (user, requestedId) => {
+    // `user` is the current real user.
+    // `requestedId` is who the uesr is asking to masquerade as.
+    return true;
+  }
 });
 
 // ...
 
-passport.use(middleware)
+passport.use(middleware);
 passport.deserializeUser(helpers.deserializeUser);
 passport.serializeUser(helpers.serializeUser);
 
 // ...
 
+router.post("/masquerade/clear", helpers.unmasqueradeEndpoint);
 router.post("/masquerade/:id", helpers.masqueradeEndpoint);
-
 ```
 
-The helpers are very opinionated, requiring, for example, fields like ":id", full user objects and JSON response blobs. As such, the raw functionality is exposed as follows.
+The helpers are opinionated, requiring, for example, fields like ":id", full user objects and JSON response blobs. As such, the raw functionality is exposed as follows.
 
 # Raw Usage
 
@@ -77,6 +76,8 @@ router.post("/masquerade/clear", (req, res) => {
 })
 ```
 
+As appropriate for your use case, you can mix-and-match the opinionated `helpers` implementation and the less opinionated raw functions.
+
 # Gotchas
 
 ## Adjusting Serialize User
@@ -91,7 +92,15 @@ passport.serializeUser((potentiallyMasqueradedUser, done) => {
 });
 ```
 
-The helper version of serializeUser handles this for you.
+The helper version of serializeUser handles this for you. If you were to persist your masqueraded user, you will lose your underlying real user session and the behavior should be considered undefined -- open to PRs that improve detection of this behavior to ease developer surprise.
+
+## Deserialized users should be (mutable) objects.
+
+This is normally the case, though if you are storing a simple string or ID as a deserialized user, we throw an error.
+
+Specifically, they need to support tacking on the `masqueradedFrom` key. Open to PRs that generalize this behavior if it is blocking anyone.
+
+If you cannot return a valid user from a requested deserialization, you should throw.
 
 # License
 
