@@ -65,15 +65,15 @@ passport.use(middleware);
 
 // ...
 
+router.post("/masquerade/clear", (req, res) => {
+    clearMasquerading(req);
+});
+
 router.post("/masquerade/:id", (req, res) => {
   if (allowedToMasquerade(getRealUser(req.user))) {
     setMasquerading(req, someOtherUser);
   }
 };
-
-router.post("/masquerade/clear", (req, res) => {
-    clearMasquerading(req);
-})
 ```
 
 As appropriate for your use case, you can mix-and-match the opinionated `helpers` implementation and the less opinionated raw functions.
