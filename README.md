@@ -1,5 +1,7 @@
 # passport-masquerade
 
+"ezpz impersonate another user"
+
 This provides a middleware to allow administrators (or other users - your implementation defines the permissions) to masquerade as other users, for example, to implement a "god view."
 
 From a design perspective, masquerading could be done two fundamental ways:
