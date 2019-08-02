@@ -35,9 +35,12 @@ const { middleware, helpers } = passportMasquerade({
 
 // ...
 
-passport.use(middleware);
 passport.deserializeUser(helpers.deserializeUser);
 passport.serializeUser(helpers.serializeUser);
+
+// ...
+
+app.use(middleware);
 
 // ...
 
@@ -61,7 +64,7 @@ const {
   deserializeMasquerade: i => i
 });
 
-passport.use(middleware);
+app.use(middleware);
 
 // ...
 

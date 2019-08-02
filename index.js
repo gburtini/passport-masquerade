@@ -22,7 +22,7 @@ const defaultSettings = {
 module.exports = (overrideSettings = {}) => {
   const settings = Object.assign({}, defaultSettings, overrideSettings);
 
-  return {
+  const context = {
     middleware: async (req, _, next) => {
       if (req.session.masqueradingAs) {
         const realUser = req.user;
@@ -48,7 +48,11 @@ module.exports = (overrideSettings = {}) => {
       if (user.masqueradingFrom) return user.masqueradingFrom;
       return user;
     },
+  };
 
-    helpers: helpers(settings, this)
+  return {
+    ...context,
+    helpers: helpers(settings, context),
   };
 };
+
