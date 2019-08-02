@@ -2,7 +2,7 @@ module.exports = (settings, context) => ({
   masqueradeEndpoint: async function(req, res) {
     const id = req.params.id;
 
-    if (!settings.canMasquerade(context.getRealUser(req.user), id)) {
+    if (!settings.canUserMasquerade(context.getRealUser(req.user), id)) {
       return res.json(settings.failureResponse);
     }
 
@@ -33,3 +33,4 @@ module.exports = (settings, context) => ({
     }
   }
 });
+
