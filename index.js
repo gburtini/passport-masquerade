@@ -24,18 +24,22 @@ module.exports = (overrideSettings = {}) => {
 
   const context = {
     middleware: async (req, _, next) => {
-      if (req.session.masqueradingAs) {
-        const realUser = req.user;
+      try {
+        if (req.session.masqueradingAs) {
+          const realUser = req.user;
 
-        req.user = await settings.deserializeMasquerade(
-          req.session.masqueradingAs
-        );
+          req.user = await settings.deserializeMasquerade(
+            req.session.masqueradingAs
+          );
 
-        req.user.masqueradingFrom = realUser;
-        req.isMasquerading = true;
+          req.user.masqueradingFrom = realUser;
+          req.isMasquerading = true;
+        }
+
+        next();
+      } catch (err) {
+        return next(err);
       }
-
-      next();
     },
     setMasquerading: (req, as) => {
       req.session.masqueradingAs = settings.serializeMasquerade(as);
