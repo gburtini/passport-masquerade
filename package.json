@@ -1,6 +1,6 @@
 {
   "name": "passport-masquerade",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Toolkit to support masquerading as another user.",
   "main": "index.js",
   "author": "Giuseppe Burtini",
